@@ -1,0 +1,25 @@
+{
+  "name": "zappar-threejs-example",
+  "version": "0.0.0",
+  "description": "Example using Zappar's ThreeJS wrapper",
+  "source": "src/index.html",
+  "scripts": {
+    "start": "parcel --https",
+    "build": "parcel build --public-url='./'"
+  },
+  "author": "Zappar Limited",
+  "license": "MIT",
+  "dependencies": {
+    "@zappar/sharing": "^1.1.7",
+    "@zappar/video-recorder": "^1.0.1",
+    "@zappar/zappar-threejs": "2.0.1",
+    "three": "^0.137.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.138.0",
+    "buffer": "^6.0.3",
+    "gh-pages": "^3.1.0",
+    "parcel": "^2.7.0",
+    "process": "^0.11.10"
+  }
+}
