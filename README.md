@@ -1,15 +1,3 @@
-# Zappar for ThreeJS Example
-​
-This repository contains an AR example using the Zappar SDK for ThreeJS. This specific example uses `parcel` to compile and bundle the assets and code, and TypeScript to get full auto-complete and compile-time error checking.
-​
-To learn more about Zappar for ThreeJS, head over to the [Zappar for ThreeJS](https://www.npmjs.com/package/@zappar/zappar-threejs) (@zappar/zappar-threejs) page on npm.
-​
-## Preview
-​
-Scan the QR code below using your native camera app or QR code reader to view the example:
-​
-![Preview QR Code"](preview-qr-code.png)
-​
 ## Prerequisites
 ​
 To get started you'll want to ensure you have:
