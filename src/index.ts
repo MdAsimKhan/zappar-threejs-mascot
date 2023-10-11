@@ -75,7 +75,7 @@ const gltfLoader = new GLTFLoader(manager);
 gltfLoader.load(model, (gltf) => {
   // Now the model has been loaded, we can add it to our instant_tracker_group
   instantTrackerGroup.add(gltf.scene);
-  gltf.scene.scale.set(6, 6, 6);
+  gltf.scene.scale.set(3, 3, 3);
   // console.log(gltf.scene);
 }, undefined, () => {
   console.log('An error ocurred loading the GLTF model');
