@@ -71,12 +71,19 @@ scene.add(instantTrackerGroup);
 // Load a 3D model to place within our group (using ThreeJS's GLTF loader)
 // Pass our loading manager in to ensure the progress bar works correctly
 const gltfLoader = new GLTFLoader(manager);
-
+let mixer : any;
+let mymodel : any;
 gltfLoader.load(model, (gltf) => {
   // Now the model has been loaded, we can add it to our instant_tracker_group
+  mymodel = gltf.scene;
   instantTrackerGroup.add(gltf.scene);
+  gltf.scene.visible = false;
   gltf.scene.scale.set(3, 3, 3);
-  // console.log(gltf.scene);
+  gltf.scene.position.set(0, -1, 0);
+  mixer = new THREE.AnimationMixer(gltf.scene);
+  let action = mixer.clipAction(gltf.animations[0]);
+  action.play();
+  console.log(gltf.animations);
 }, undefined, () => {
   console.log('An error ocurred loading the GLTF model');
 });
@@ -98,6 +105,7 @@ let hasPlaced = false;
 const placeButton = document.getElementById('tap-to-place') || document.createElement('div');
 placeButton.addEventListener('click', () => {
   hasPlaced = true;
+  mymodel.visible = true;
   placeButton.remove();
 });
 
@@ -176,6 +184,7 @@ function render(): void {
   // Draw the ThreeJS scene in the usual way, but using the Zappar camera
   renderer.render(scene, camera);
 
+  if(mixer) mixer.update(0.01);
   // Call render() again next frame
   requestAnimationFrame(render);
 }
