@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import * as ZapparThree from '@zappar/zappar-threejs';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-const model = new URL('../assets/waving.glb', import.meta.url).href;
+const model = new URL('../assets/BULLFINAL.glb', import.meta.url).href;
 import ZapparSharing from '@zappar/sharing';
 import * as ZapparVideoRecorder from '@zappar/video-recorder';
 import './index.css';
@@ -77,26 +77,37 @@ gltfLoader.load(model, (gltf) => {
   // Now the model has been loaded, we can add it to our instant_tracker_group
   mymodel = gltf.scene;
   instantTrackerGroup.add(gltf.scene);
-  gltf.scene.visible = false;
-  gltf.scene.scale.set(3, 3, 3);
-  gltf.scene.position.set(0, -1, 0);
+  // gltf.scene.visible = false;
+  gltf.scene.scale.set(10, 10, 10);
+  gltf.scene.position.set(0, -0.5, 0);
   mixer = new THREE.AnimationMixer(gltf.scene);
   let action = mixer.clipAction(gltf.animations[0]);
   action.play();
-  console.log(gltf.animations);
+  // console.log(gltf.scene);
+  // console.log(gltf.animations);
 }, undefined, () => {
   console.log('An error ocurred loading the GLTF model');
 });
 
 // Let's add some lighting, first a directional light above the model pointing down
 const directionalLight = new THREE.DirectionalLight('white', 0.8);
-directionalLight.position.set(0, 5, 0);
+directionalLight.position.set(0, 0, 1000);
 directionalLight.lookAt(0, 0, 0);
 instantTrackerGroup.add(directionalLight);
+console.log(directionalLight);
 
 // And then a little ambient light to brighten the model up a bit
 const ambientLight = new THREE.AmbientLight('white', 0.4);
 instantTrackerGroup.add(ambientLight);
+
+const pointLight = new THREE.PointLight(0xffffff, 0.8);
+pointLight.position.set(0, 100, 200);
+instantTrackerGroup.add(pointLight);
+
+const spotLight = new THREE.SpotLight(0xffffff, 0.8); // Adjust color and intensity
+spotLight.position.set(0, 25, 500); // Set the position
+spotLight.target.position.set(0, -0.5, 0); // Set the target
+instantTrackerGroup.add(spotLight);
 
 // When the experience loads we'll let the user choose a place in their room for
 // the content to appear using setAnchorPoseFromCameraOffset (see below)
@@ -170,6 +181,22 @@ ZapparVideoRecorder.createCanvasVideoRecorder(canvas, {
   });
 });
 
+// const sprites: THREE.Sprite[] = [];
+// let currentFrame = 0;
+// const totalFrames = 50;
+
+// // Load sprite images and create sprite objects
+// for (let i = 0; i < totalFrames; i++) {
+//   const textureLoader = new THREE.TextureLoader();
+//   const texture = textureLoader.load(`assets/flowers/frame_${i}_delay-0.04s.gif`);
+//   const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+
+//   const sprite = new THREE.Sprite(spriteMaterial);
+//   sprite.scale.set(2, 2, 1); // Scale the sprite to cover the canvas
+//   scene.add(sprite);
+//   sprites.push(sprite);
+// }
+
 // Use a function to render our scene as usual
 function render(): void {
   if (!hasPlaced) {
@@ -181,12 +208,21 @@ function render(): void {
   // The Zappar camera must have updateFrame called every frame
   camera.updateFrame(renderer);
 
+  if(mixer) mixer.update(0.01);
+  
+  // Call render() again next frame
+  requestAnimationFrame(render);
+
+  // Rotate and update the sprites
+  // const axis = new THREE.Vector3(0, 0, 1);
+  // const angle = 0.02;
+  // sprites[currentFrame].rotateOnAxis(axis, angle);
+
   // Draw the ThreeJS scene in the usual way, but using the Zappar camera
   renderer.render(scene, camera);
 
-  if(mixer) mixer.update(0.01);
-  // Call render() again next frame
-  requestAnimationFrame(render);
+  // Update the current frame
+  // currentFrame = (currentFrame + 1) % totalFrames;
 }
 
 // Start things off
