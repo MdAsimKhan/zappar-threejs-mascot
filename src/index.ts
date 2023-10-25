@@ -1,8 +1,3 @@
-/// Zappar for ThreeJS Examples
-/// Instant Tracking 3D Model
-
-// In this example we track a 3D model using instant world tracking
-
 import * as THREE from 'three';
 import * as ZapparThree from '@zappar/zappar-threejs';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
@@ -10,10 +5,6 @@ const model = new URL('../assets/BULLFINAL.glb', import.meta.url).href;
 import ZapparSharing from '@zappar/sharing';
 import * as ZapparVideoRecorder from '@zappar/video-recorder';
 import './index.css';
-// The SDK is supported on many different browsers, but there are some that
-// don't provide camera access. This function detects if the browser is supported
-// For more information on support, check out the readme over at
-// https://www.npmjs.com/package/@zappar/zappar-threejs
 if (ZapparThree.browserIncompatible()) {
   // The browserIncompatibleUI() function shows a full-page dialog that informs the user
   // they're using an unsupported browser, and provides a button to 'copy' the current page
@@ -77,14 +68,13 @@ gltfLoader.load(model, (gltf) => {
   // Now the model has been loaded, we can add it to our instant_tracker_group
   mymodel = gltf.scene;
   instantTrackerGroup.add(gltf.scene);
-  // gltf.scene.visible = false;
-  gltf.scene.scale.set(10, 10, 10);
-  gltf.scene.position.set(0, -0.5, 0);
+  gltf.scene.visible = false;
+  gltf.scene.scale.set(30, 30, 30);
+  gltf.scene.position.set(0, 0, 0);
+  console.log(gltf.scene);
   mixer = new THREE.AnimationMixer(gltf.scene);
   let action = mixer.clipAction(gltf.animations[0]);
   action.play();
-  // console.log(gltf.scene);
-  // console.log(gltf.animations);
 }, undefined, () => {
   console.log('An error ocurred loading the GLTF model');
 });
@@ -94,7 +84,6 @@ const directionalLight = new THREE.DirectionalLight('white', 0.8);
 directionalLight.position.set(0, 0, 1000);
 directionalLight.lookAt(0, 0, 0);
 instantTrackerGroup.add(directionalLight);
-console.log(directionalLight);
 
 // And then a little ambient light to brighten the model up a bit
 const ambientLight = new THREE.AmbientLight('white', 0.4);
