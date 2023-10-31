@@ -1,10 +1,11 @@
 import * as THREE from 'three';
 import * as ZapparThree from '@zappar/zappar-threejs';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-const model = new URL('../assets/BULLFINAL.glb', import.meta.url).href;
 import ZapparSharing from '@zappar/sharing';
 import * as ZapparVideoRecorder from '@zappar/video-recorder';
 import './index.css';
+
+
 if (ZapparThree.browserIncompatible()) {
   // The browserIncompatibleUI() function shows a full-page dialog that informs the user
   // they're using an unsupported browser, and provides a button to 'copy' the current page
@@ -59,8 +60,8 @@ const instantTrackerGroup = new ZapparThree.InstantWorldAnchorGroup(camera, inst
 // Add our instant tracker group into the ThreeJS scene
 scene.add(instantTrackerGroup);
 
-// Load a 3D model to place within our group (using ThreeJS's GLTF loader)
-// Pass our loading manager in to ensure the progress bar works correctly
+const model = new URL('../assets/waywin.glb', import.meta.url).href;
+
 const gltfLoader = new GLTFLoader(manager);
 let mixer : any;
 let mymodel : any;
@@ -79,7 +80,30 @@ gltfLoader.load(model, (gltf) => {
   console.log('An error ocurred loading the GLTF model');
 });
 
-// Let's add some lighting, first a directional light above the model pointing down
+//====================UI frame begin=================================//
+const topLogo = new URL("../assets/logo.png", import.meta.url).href;
+const bottomText = new URL("../assets/bottom.png", import.meta.url).href;
+
+const loader = new THREE.TextureLoader(manager);
+
+const texture = loader.load(topLogo);
+const fire = new THREE.Mesh(
+    new THREE.PlaneBufferGeometry(),
+    new THREE.MeshBasicMaterial({ map: texture, transparent: true })
+);
+fire.scale.set(0.3, 0.17, 1);
+fire.position.set(0, 0.44, -1);
+scene.add(fire);
+
+const bottom = new THREE.Mesh(
+    new THREE.PlaneBufferGeometry(),
+    new THREE.MeshBasicMaterial({ map: loader.load(bottomText), transparent: true })
+);
+bottom.scale.set(.6, .4, .2);
+bottom.position.set(0, -0.33, -1);
+scene.add(bottom);
+//========================UI Frame end===============================//
+
 const directionalLight = new THREE.DirectionalLight('white', 0.8);
 directionalLight.position.set(0, 0, 1000);
 directionalLight.lookAt(0, 0, 0);
@@ -98,9 +122,6 @@ spotLight.position.set(0, 25, 500); // Set the position
 spotLight.target.position.set(0, -0.5, 0); // Set the target
 instantTrackerGroup.add(spotLight);
 
-// When the experience loads we'll let the user choose a place in their room for
-// the content to appear using setAnchorPoseFromCameraOffset (see below)
-// The user can confirm the location by tapping on the screen
 let hasPlaced = false;
 const placeButton = document.getElementById('tap-to-place') || document.createElement('div');
 placeButton.addEventListener('click', () => {
@@ -110,7 +131,7 @@ placeButton.addEventListener('click', () => {
 });
 
 // Get a reference to the 'Snapshot' button so we can attach a 'click' listener
-const snapButton = document.getElementById('snapshot') || document.createElement('div');
+const snapButton = document.getElementById('image') || document.createElement('div');
 
 snapButton.addEventListener("click", () => {
 
@@ -133,8 +154,6 @@ snapButton.addEventListener("click", () => {
   // Render the scene
   renderer.render(scene, camera);
 
-  // Capture the rendered image from the main renderer
-  // const screenshotImage = new Image();
   const dataURL = renderer.domElement.toDataURL("image/png");
 
     // Take snapshot
@@ -148,19 +167,20 @@ snapButton.addEventListener("click", () => {
 });
 
 // video capture
-const vidButton = document.getElementById('videocapture') || document.createElement('div');
-const stopButton = document.getElementById('stopcapture') || document.createElement('div');
-
 const canvas = document.querySelector('canvas') || document.createElement('canvas');
-
+const videoBtn = document.getElementById('video') || document.createElement('div');
+let isRecording = false;
 ZapparVideoRecorder.createCanvasVideoRecorder(canvas, {
 }).then((recorder) => {
-  vidButton.addEventListener('click', () => {
-    recorder.start();
-  });
-
-  stopButton.addEventListener('click', () => {
-    recorder.stop();
+  videoBtn.addEventListener('click', () => {
+    if(!isRecording) {
+      isRecording = true;
+      recorder.start();
+    }
+    else {
+      isRecording = false;
+      recorder.stop();
+    }
   });
 
   recorder.onComplete.bind(async (res) => {
@@ -169,22 +189,6 @@ ZapparVideoRecorder.createCanvasVideoRecorder(canvas, {
     });
   });
 });
-
-// const sprites: THREE.Sprite[] = [];
-// let currentFrame = 0;
-// const totalFrames = 50;
-
-// // Load sprite images and create sprite objects
-// for (let i = 0; i < totalFrames; i++) {
-//   const textureLoader = new THREE.TextureLoader();
-//   const texture = textureLoader.load(`assets/flowers/frame_${i}_delay-0.04s.gif`);
-//   const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
-
-//   const sprite = new THREE.Sprite(spriteMaterial);
-//   sprite.scale.set(2, 2, 1); // Scale the sprite to cover the canvas
-//   scene.add(sprite);
-//   sprites.push(sprite);
-// }
 
 // Use a function to render our scene as usual
 function render(): void {
@@ -202,16 +206,8 @@ function render(): void {
   // Call render() again next frame
   requestAnimationFrame(render);
 
-  // Rotate and update the sprites
-  // const axis = new THREE.Vector3(0, 0, 1);
-  // const angle = 0.02;
-  // sprites[currentFrame].rotateOnAxis(axis, angle);
-
   // Draw the ThreeJS scene in the usual way, but using the Zappar camera
   renderer.render(scene, camera);
-
-  // Update the current frame
-  // currentFrame = (currentFrame + 1) % totalFrames;
 }
 
 // Start things off
