@@ -70,8 +70,8 @@ gltfLoader.load(model, (gltf) => {
   mymodel = gltf.scene;
   instantTrackerGroup.add(gltf.scene);
   gltf.scene.visible = false;
-  gltf.scene.scale.set(30, 30, 30);
-  gltf.scene.position.set(0, 0, 0);
+  gltf.scene.scale.set(20, 20, 20);
+  gltf.scene.position.set(0.5, -1.4, 0);
   console.log(gltf.scene);
   mixer = new THREE.AnimationMixer(gltf.scene);
   let action = mixer.clipAction(gltf.animations[0]);
@@ -82,7 +82,7 @@ gltfLoader.load(model, (gltf) => {
 
 //====================UI frame begin=================================//
 const topLogo = new URL("../assets/logo.png", import.meta.url).href;
-const bottomText = new URL("../assets/bottom.png", import.meta.url).href;
+// const bottomText = new URL("../assets/bottom.png", import.meta.url).href;
 
 const loader = new THREE.TextureLoader(manager);
 
@@ -95,13 +95,14 @@ fire.scale.set(0.3, 0.17, 1);
 fire.position.set(0, 0.44, -1);
 scene.add(fire);
 
-const bottom = new THREE.Mesh(
-    new THREE.PlaneBufferGeometry(),
-    new THREE.MeshBasicMaterial({ map: loader.load(bottomText), transparent: true })
-);
-bottom.scale.set(.6, .4, .2);
-bottom.position.set(0, -0.33, -1);
-scene.add(bottom);
+// const bottom = new THREE.Mesh(
+//     new THREE.PlaneBufferGeometry(),
+//     new THREE.MeshBasicMaterial({ map: loader.load(bottomText), transparent: true })
+// );
+// bottom.scale.set(0.6, 0.6, 0.6);
+// bottom.position.set(0, -0.28, -1);
+// scene.add(bottom);
+// console.log(bottom);
 //========================UI Frame end===============================//
 
 const directionalLight = new THREE.DirectionalLight('white', 0.8);
@@ -124,7 +125,9 @@ instantTrackerGroup.add(spotLight);
 
 let hasPlaced = false;
 const placeButton = document.getElementById('tap-to-place') || document.createElement('div');
-placeButton.addEventListener('click', () => {
+
+
+document.addEventListener('click', (event) => {
   hasPlaced = true;
   mymodel.visible = true;
   placeButton.remove();

@@ -1,35 +1,3 @@
-<!-- <!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,user-scalable=no,minimal-ui" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <title>Real Mascot</title>
-    <script type="module" src="index.ts"></script>
-</head>
-
-<body>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <div class="fixed-top" style="display: flex; justify-content: center; align-items: center;">
-    <div id="tap-to-place" class="btn" style="display: inline-block; margin: 8px;">Tap to Place</div>
-    <div id="snapshot" class="btn" style="display: inline-block; margin: 8px;">
-      <i class="fa noselect">&#xf030;</i>
-    </div>
-    <div id="videocapture" class="btn" style="display: inline-block; margin: 8px;">
-      <i class="fa noselect">&#xf03d;</i>
-    </div>
-    <div id="stopcapture" class="btn" style="display: inline-block; margin: 8px;">
-      <i class="fa noselect">&#xf28d;</i>
-    </div>
-  </div>
-</body>
-
-</html> -->
-
 <!DOCTYPE html>
 <html>
 
@@ -42,12 +10,12 @@
 </head>
 
 <body>
-    <!-- <div style="display: flex; justify-content: center; align-items: center;">
-      
-    </div> -->
-
+    <div class="overlay">
+      <div id="tap-to-place" class="centered-text">
+        <img src="../assets/tap.png" alt="tap to place">
+      </div>
+    </div>
     <div class="container">
-        <div id="tap-to-place">Tap to Place</div>
         <div class="text-container">
             <div class="left-text selected-text">
                 Image
@@ -66,11 +34,10 @@
     const rightText = document.querySelector(".right-text");
     const photoButton = document.getElementById("image");
     const videoButton = document.getElementById("video");
+    let isRecording = false;
 
-    // Show "Photo" button and underline "Image" as initially selected
     photoButton.style.display = "block";
 
-    // Add click event listeners to the text elements
     leftText.addEventListener("click", () => {
         photoButton.style.display = "block";
         videoButton.style.display = "none";
@@ -83,6 +50,16 @@
         photoButton.style.display = "none";
         rightText.classList.add("selected-text");
         leftText.classList.remove("selected-text");
+    });
+
+    videoButton.addEventListener("click", () => {
+        if(!isRecording) {
+            isRecording = true;
+            videoButton.classList.add("recording-on");
+        } else {
+            isRecording = false;
+            videoButton.classList.remove("recording-on");
+        }
     });
 </script>
 
