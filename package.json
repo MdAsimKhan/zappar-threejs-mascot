@@ -12,6 +12,7 @@
   "dependencies": {
     "@zappar/sharing": "^1.1.7",
     "@zappar/video-recorder": "^1.0.1",
+    "@zappar/webgl-snapshot": "^1.1.1",
     "@zappar/zappar-threejs": "2.0.1",
     "three": "^0.137.0"
   },

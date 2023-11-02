@@ -1,11 +1,12 @@
 import * as THREE from 'three';
 import * as ZapparThree from '@zappar/zappar-threejs';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import ZapparSharing from '@zappar/sharing';
+import ZapparWebGLSnapshot from '@zappar/webgl-snapshot';
+// import ZapparSharing from '@zappar/sharing';
 import * as ZapparVideoRecorder from '@zappar/video-recorder';
 import './index.css';
 
-
+let allowTap = false;
 if (ZapparThree.browserIncompatible()) {
   // The browserIncompatibleUI() function shows a full-page dialog that informs the user
   // they're using an unsupported browser, and provides a button to 'copy' the current page
@@ -41,7 +42,10 @@ const camera = new ZapparThree.Camera();
 ZapparThree.permissionRequestUI().then((granted) => {
   // If the user granted us the permissions we need then we can start the camera
   // Otherwise let's them know that it's necessary with Zappar's permission denied UI
-  if (granted) camera.start();
+  if (granted) {
+    camera.start();
+    allowTap = true;
+  }
   else ZapparThree.permissionDeniedUI();
 });
 
@@ -66,7 +70,6 @@ const gltfLoader = new GLTFLoader(manager);
 let mixer : any;
 let mymodel : any;
 gltfLoader.load(model, (gltf) => {
-  // Now the model has been loaded, we can add it to our instant_tracker_group
   mymodel = gltf.scene;
   instantTrackerGroup.add(gltf.scene);
   gltf.scene.visible = false;
@@ -110,7 +113,6 @@ directionalLight.position.set(0, 0, 1000);
 directionalLight.lookAt(0, 0, 0);
 instantTrackerGroup.add(directionalLight);
 
-// And then a little ambient light to brighten the model up a bit
 const ambientLight = new THREE.AmbientLight('white', 0.4);
 instantTrackerGroup.add(ambientLight);
 
@@ -118,26 +120,23 @@ const pointLight = new THREE.PointLight(0xffffff, 0.8);
 pointLight.position.set(0, 100, 200);
 instantTrackerGroup.add(pointLight);
 
-const spotLight = new THREE.SpotLight(0xffffff, 0.8); // Adjust color and intensity
-spotLight.position.set(0, 25, 500); // Set the position
-spotLight.target.position.set(0, -0.5, 0); // Set the target
+const spotLight = new THREE.SpotLight(0xffffff, 0.8);
+spotLight.position.set(0, 25, 500);
+spotLight.target.position.set(0, -0.5, 0);
 instantTrackerGroup.add(spotLight);
 
 let hasPlaced = false;
 const placeButton = document.getElementById('tap-to-place') || document.createElement('div');
 
-
-document.addEventListener('click', (event) => {
-  hasPlaced = true;
-  mymodel.visible = true;
-  placeButton.remove();
-});
+// document.addEventListener('click', (event) => {
+//   hasPlaced = true;
+//   mymodel.visible = true;
+//   placeButton.remove();
+// });
 
 // Get a reference to the 'Snapshot' button so we can attach a 'click' listener
 const snapButton = document.getElementById('image') || document.createElement('div');
-
 snapButton.addEventListener("click", () => {
-
   // Create an image from the canvas
   const planeGeometry = new THREE.PlaneGeometry(2, 2);
   const planeMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
@@ -153,17 +152,16 @@ snapButton.addEventListener("click", () => {
   );
 
   camera.lookAt(planeMesh.position);
-
   // Render the scene
   renderer.render(scene, camera);
-
   const dataURL = renderer.domElement.toDataURL("image/png");
-
     // Take snapshot
-  ZapparSharing({
+  // ZapparSharing({
+  //   data: dataURL,
+  // });
+  ZapparWebGLSnapshot({
     data: dataURL,
   });
-
   // Reset the camera and visibility of the planeMesh
   camera.position.copy(originalCameraPosition);
   camera.lookAt(0, 0, 0);
@@ -187,7 +185,7 @@ ZapparVideoRecorder.createCanvasVideoRecorder(canvas, {
   });
 
   recorder.onComplete.bind(async (res) => {
-    ZapparSharing({
+    ZapparWebGLSnapshot({
       data: await res.asDataURL(),
     });
   });
@@ -200,7 +198,13 @@ function render(): void {
     // to be directly in front of the user
     instantTrackerGroup.setAnchorPoseFromCameraOffset(0, 0, -5);
   }
-
+  if(allowTap && !hasPlaced) {
+    document.addEventListener('click', (event) => {
+      hasPlaced = true;
+      mymodel.visible = true;
+      placeButton.remove();
+    });
+ }
   // The Zappar camera must have updateFrame called every frame
   camera.updateFrame(renderer);
 
